@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-color: #adadad;
+  --font-color: #000;
+}
+* {
+  font-size: 24px;
+}
+body {
+  background-color: var(--bg-color);
+}
