@@ -1,13 +1,15 @@
 import { ChangeEvent, FormEvent, useState } from 'react';
-import type { Form, RootState, Contact } from '@types';
-import { useDispatch, useSelector } from 'react-redux';
-import { addContact } from '../../redux/contactsSlice';
+import { nanoid } from '@reduxjs/toolkit';
+import type { Form } from '@types';
+import { useSelector } from 'react-redux';
+import { selectContacts } from '../../redux/selectors';
+import { addContact, useAppDispatch } from '../../redux/contactsThunk';
 
 const ContactForm = () => {
   const [form, setForm] = useState<Form>({ name: '', number: '' });
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const contacts = useSelector((state: RootState): Contact[] => state.contacts);
+  const contacts = useSelector(selectContacts);
 
   const handleInput = (e: ChangeEvent) => {
     const { name, value }: { name: string; value: string } = e.target as HTMLInputElement;
@@ -19,11 +21,16 @@ const ContactForm = () => {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     setForm({ name: '', number: '' });
-    if (contacts.some((cont) => cont.name.toLowerCase() === form.name.toLowerCase())) {
+    if (contacts.items.some((cont) => cont.name.toLowerCase() === form.name.toLowerCase())) {
       alert(`${form.name} is arleady in contacts.`);
       return;
     }
-    dispatch(addContact(form));
+    const data = {
+      id: nanoid(),
+      name: form.name,
+      number: form.number,
+    };
+    dispatch(addContact(data));
   };
 
   return (
@@ -41,7 +48,7 @@ const ContactForm = () => {
           value={form.name}
         />
       </label>
-      <label className='flex flex-col'>
+      <label className='my-auto flex flex-col items-center'>
         Number:
         <input
           className='w-[400px]'
